@@ -2,16 +2,9 @@ import Editor from './Editor'
 import { useState } from 'react'
 import { YoutubeItem } from '../types/youtubeItem'
 import {
-    Avatar,
     Box,
-    IconButton,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemSecondaryAction,
-    ListItemText,
 } from '@mui/material'
-import { Delete, Edit, Folder } from '@mui/icons-material'
+import YoutubeList from "./YoutubeList";
 
 const MainPage = () => {
     const [list, updateList] = useState<YoutubeItem[]>([])
@@ -39,7 +32,8 @@ const MainPage = () => {
             component="form"
             sx={{
                 '& > :not(style)': { m: 1, width: '25ch' },
-                border: '1 px solid blue',
+                border: '1px solid red',
+                margin: '0 auto',
                 width: '300px',
                 textAlign: 'center',
             }}
@@ -47,36 +41,7 @@ const MainPage = () => {
             autoComplete="off"
         >
             <Editor entryToUpdate={entryToUpdate} onSubmit={handleSave} />
-            <List dense>
-                {list.map((listEntry) => {
-                    return (
-                        <ListItem key={listEntry.id}>
-                            <ListItemSecondaryAction>
-                                <IconButton
-                                    edge="end"
-                                    aria-label="delete"
-                                    onClick={() => handleDelete(listEntry)}
-                                >
-                                    <Delete />
-                                </IconButton>
-                                <IconButton
-                                    edge="end"
-                                    aria-label="delete"
-                                    onClick={() => setEntryToUpdate(listEntry)}
-                                >
-                                    <Edit />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                            <ListItemAvatar>
-                                <Avatar>
-                                    <Folder />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={listEntry.videoName} />
-                        </ListItem>
-                    )
-                })}
-            </List>
+            <YoutubeList list={list} onDelete={handleDelete} onUpdate={setEntryToUpdate}/>
         </Box>
     )
 }
