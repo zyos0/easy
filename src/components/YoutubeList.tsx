@@ -3,25 +3,23 @@ import {
     List,
 } from '@mui/material'
 import YoutubeListItem from './YoutubeListItem'
+import {Dispatch} from "react";
 
 interface YoutubeListProps {
     list: YoutubeItem[]
-    onUpdate: (updatePayload: YoutubeItem) => void
-    onDelete: (deletePayload: YoutubeItem) => void
+    dispatch: Dispatch<any>
 }
 
 const YoutubeList: React.FC<YoutubeListProps> = ({
     list,
-    onDelete,
-    onUpdate,
+   dispatch
 }) => {
     return (
         <List dense>
             {list.map((listEntry) => {
                 return (
                     <YoutubeListItem
-                        onUpdate={onUpdate}
-                        onDelete={onDelete}
+                        dispatch={dispatch}
                         listItem={listEntry}
                     />
                 )

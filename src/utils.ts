@@ -7,3 +7,4 @@ export const getThumbnail = (url: string) => {
     const videoId = segments[1]
     return thumbnailTemplate.replace('$id', videoId)
 }
+

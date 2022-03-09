@@ -8,17 +8,16 @@ import {
     ListItemText,
 } from '@mui/material'
 import { Delete, Edit, Folder } from '@mui/icons-material'
-import { getThumbnail } from '../types/utils'
+import { getThumbnail } from '../utils'
+import { Dispatch } from 'react'
 
 interface YoutubeListItemProps {
-    onUpdate: (updatePayload: YoutubeItem) => void
-    onDelete: (deletePayload: YoutubeItem) => void
+    dispatch: Dispatch<any>
     listItem: YoutubeItem
 }
 const YoutubeListItem: React.FC<YoutubeListItemProps> = ({
     listItem,
-    onDelete,
-    onUpdate,
+    dispatch,
 }) => {
     return (
         <ListItem key={listItem.id}>
@@ -26,14 +25,24 @@ const YoutubeListItem: React.FC<YoutubeListItemProps> = ({
                 <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={() => onDelete(listItem)}
+                    onClick={() =>
+                        dispatch({
+                            type: 'delete',
+                            payload: { item: listItem },
+                        })
+                    }
                 >
                     <Delete />
                 </IconButton>
                 <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={() => onUpdate(listItem)}
+                    onClick={() =>
+                        dispatch({
+                            type: 'start-edit',
+                            payload: { item: listItem },
+                        })
+                    }
                 >
                     <Edit />
                 </IconButton>

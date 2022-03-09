@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Dispatch, useEffect, useState } from 'react'
 import { YoutubeItem } from '../types/youtubeItem'
 // @ts-ignore
 import { v4 as uuidv4 } from 'uuid'
@@ -7,26 +7,28 @@ import { v4 as uuidv4 } from 'uuid'
 const blackList = ['demo', 'test']
 
 interface EditorProps {
-    onSubmit: (submittedEntry: YoutubeItem) => void
+    dispatch: Dispatch<any>
     entryToUpdate?: YoutubeItem
 }
 
-const Editor: React.FC<EditorProps> = ({ onSubmit, entryToUpdate }) => {
+const Editor: React.FC<EditorProps> = ({ dispatch, entryToUpdate }) => {
     const [videoName, setVideoName] = useState('')
     const [videoUrl, setVideoUrl] = useState('')
 
     useEffect(() => {
-        if(!entryToUpdate)return
+        if (!entryToUpdate) return
 
         setVideoName(entryToUpdate.videoName)
         setVideoUrl(entryToUpdate.videoUrl)
     }, [entryToUpdate])
 
     const handleSubmit = () => {
-        const payload: YoutubeItem = entryToUpdate
+        const entry: YoutubeItem = entryToUpdate
             ? { videoName, videoUrl, id: entryToUpdate.id }
             : { videoName, videoUrl, id: uuidv4() }
-        onSubmit(payload)
+        const type = entryToUpdate ? 'edit' : 'add'
+        dispatch({ type, payload: { item: entry } })
+
         setVideoName('')
         setVideoUrl('')
     }
