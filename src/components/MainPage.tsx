@@ -1,14 +1,25 @@
 import Editor from './Editor'
-import {useReducer} from 'react'
-import {
-    Box,
-} from '@mui/material'
-import YoutubeList from "./YoutubeList";
-import {listReducer, youtubeInitialState} from "../store/reducer";
+import React, { useReducer } from 'react'
+import { Box } from '@mui/material'
+import YoutubeList from './YoutubeList'
+import { listReducer, youtubeInitialState } from '../store/reducer'
+
+const ListContext = React.createContext(undefined)
+const ListProvider = (props: any) => {
+    const [state, dispatch] = useReducer(listReducer, youtubeInitialState)
+    return <ListContext.Provider value={[state, dispatch]} {...props} />
+}
+
+export const useList = ():any => {
+    const context = React.useContext(ListContext)
+    if (!context) {
+        throw new Error('useList must be uses within a ListProvider')
+    }
+    return context
+}
 
 const MainPage = () => {
     const [state, dispatch] = useReducer(listReducer, youtubeInitialState)
-    const {list, entryToUpdate} = state
 
     return (
         <Box
@@ -23,8 +34,10 @@ const MainPage = () => {
             noValidate
             autoComplete="off"
         >
-            <Editor entryToUpdate={entryToUpdate} dispatch={dispatch} />
-            <YoutubeList list={list} dispatch={dispatch}/>
+            <ListProvider>
+                <Editor />
+                <YoutubeList/>
+            </ListProvider>
         </Box>
     )
 }

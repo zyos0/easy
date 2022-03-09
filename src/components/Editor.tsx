@@ -3,18 +3,15 @@ import { Dispatch, useEffect, useState } from 'react'
 import { YoutubeItem } from '../types/youtubeItem'
 // @ts-ignore
 import { v4 as uuidv4 } from 'uuid'
+import {useList} from "./MainPage";
 
 const blackList = ['demo', 'test']
 
-interface EditorProps {
-    dispatch: Dispatch<any>
-    entryToUpdate?: YoutubeItem
-}
-
-const Editor: React.FC<EditorProps> = ({ dispatch, entryToUpdate }) => {
+const Editor = () => {
+    const [state, dispatch] = useList()
     const [videoName, setVideoName] = useState('')
     const [videoUrl, setVideoUrl] = useState('')
-
+    const {entryToUpdate}= state
     useEffect(() => {
         if (!entryToUpdate) return
 

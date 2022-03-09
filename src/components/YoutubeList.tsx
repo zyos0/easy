@@ -1,25 +1,19 @@
-import { YoutubeItem } from '../types/youtubeItem'
 import {
     List,
 } from '@mui/material'
 import YoutubeListItem from './YoutubeListItem'
-import {Dispatch} from "react";
+import {useList} from "./MainPage";
 
-interface YoutubeListProps {
-    list: YoutubeItem[]
-    dispatch: Dispatch<any>
-}
 
-const YoutubeList: React.FC<YoutubeListProps> = ({
-    list,
-   dispatch
-}) => {
+
+const YoutubeList  = () => {
+    const [state, ] = useList()
+    const {list}= state
     return (
         <List dense>
-            {list.map((listEntry) => {
+            {list.map((listEntry:any) => {
                 return (
                     <YoutubeListItem
-                        dispatch={dispatch}
                         listItem={listEntry}
                     />
                 )
