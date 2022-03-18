@@ -1,13 +1,26 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Login from './components/Login'
-import Plates from './components/Plates'
+import Login from './pages/Login'
+import Plates from './pages/Plates'
+import { baseRoute, loginRoute, platesRoute } from './constants/routes'
+import { decodeToken, getToken } from './utils/tokenManagement'
+import { useDispatch } from 'react-redux'
+import { SessionActions } from './store/actions/session'
+import PrivateRoute from "./components/PrivateRoute";
 
 const MainRouter = () => {
+    const token = getToken()
+    const dispatch = useDispatch()
+    if (token) {
+        const decodedUserData = decodeToken()
+        dispatch(SessionActions.onLoginSuccess(decodedUserData))
+    }
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/plates" element={<Plates />} />
+                <Route path={baseRoute} element={<Login />} />
+                <Route path={loginRoute} element={<Login />} />
+                <Route path={platesRoute} element={<PrivateRoute><Plates /></PrivateRoute>} />
+                <Route path="*" element={<span>404</span>} />
             </Routes>
         </BrowserRouter>
     )

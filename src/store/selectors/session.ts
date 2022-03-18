@@ -3,7 +3,17 @@ import { createSelector } from '@reduxjs/toolkit'
 
 export const sessionStateSelector = (state: any): SessionState => state.session
 
-export const userNameStateSelector = createSelector(
+export const sessionAuthenticatedSelector = createSelector(
     sessionStateSelector,
-    (sessionState) => sessionState.userName
+    (sessionState) => sessionState.authenticated
+)
+
+export const sessionAuthenticationInProgressSelector = createSelector(
+    sessionStateSelector,
+    (sessionState) => sessionState.authenticationInProgress
+)
+
+export const sessionAuthenticationError = createSelector(
+    sessionStateSelector,
+    (sessionState) => sessionState.authenticationError
 )

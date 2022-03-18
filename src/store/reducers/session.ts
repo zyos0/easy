@@ -1,47 +1,54 @@
-import { updateUserName } from '../actions/session'
+import { SessionActions } from '../actions/session'
 import { createReducer } from '@reduxjs/toolkit'
 
 export interface SessionState {
-    userName: string
-    password: string
     authenticated: boolean
+    authenticationInProgress: boolean
+    userData: any
+    authenticationError: { message: string } | null
 }
 
 const getInitialState = (): SessionState => {
     return {
-        userName: '',
-        password: '',
         authenticated: false,
+        authenticationInProgress: false,
+        userData: null,
+        authenticationError: null,
     }
 }
 
-const UpdateUserNameExecutor = (
+const onLoginSuccess = (
     state: SessionState,
-    { payload }: ReturnType<typeof updateUserName>
+    { payload }: ReturnType<typeof SessionActions.onLoginSuccess>
 ) => {
-    // return {
-    //     ...state,
-    //     userName: payload,
-    // }
-
-    state.userName = payload
+    state.userData = payload
+    state.authenticated = true
 }
 
-// export const sessionReducer = (
-//     state = getInitialState(),
-//     action: SessionAction
-// ) => {
-//     const { type } = action
-//     switch (type) {
-//         case SessionActionType.UPDATE_USERNAME:
-//             return UpdateUserNameExecutor(state, action)
-//         default:
-//             return state
-//     }
-// }
+const onLoginError = (
+    state: SessionState,
+    { payload }: ReturnType<typeof SessionActions.onLoginError>
+) => {
+    state.authenticationError = { message: payload.message }
+}
+
+const toggleLoadingState = (
+    state: SessionState,
+    { payload }: ReturnType<typeof SessionActions.toggleLoadingState>
+) => {
+    state.authenticationInProgress = payload
+}
+
+const resetSessionState = () => {
+    return getInitialState()
+}
 
 const sessionReducerBuilder = (builder: any) => {
-    builder.addCase(updateUserName, UpdateUserNameExecutor)
+    builder
+        .addCase(SessionActions.onLoginSuccess, onLoginSuccess)
+        .addCase(SessionActions.onLoginError, onLoginError)
+        .addCase(SessionActions.toggleLoadingState, toggleLoadingState)
+        .addCase(SessionActions.resetSessionState, resetSessionState)
 }
 
 export const sessionReducer = createReducer(

@@ -13,8 +13,15 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateUserName } from '../../store/actions/session'
-import {sessionStateSelector, userNameStateSelector} from "../../store/selectors/session";
+import { loginUser } from '../../store/actions/session'
+import { LoadingButton, Alert } from '@mui/lab'
+import {
+    sessionAuthenticatedSelector,
+    sessionAuthenticationError,
+    sessionAuthenticationInProgressSelector,
+} from '../../store/selectors/session'
+import {useNavigate} from "react-router-dom";
+import {useEffect} from "react";
 
 function Copyright(props: any) {
     return (
@@ -38,17 +45,31 @@ const theme = createTheme()
 
 const Login = function () {
     const dispatch = useDispatch()
-    const userName = useSelector(userNameStateSelector)
-    console.log(userName)
+    const navigate = useNavigate()
+    const authenticationInProgress = useSelector(
+        sessionAuthenticationInProgressSelector
+    )
+
+    const userIsAuthenticated= useSelector(sessionAuthenticatedSelector)
+    const authenticationError = useSelector(sessionAuthenticationError)
+
+    useEffect(()=>{
+        if(userIsAuthenticated){
+            navigate("/plates")
+        }
+    },[navigate, userIsAuthenticated])
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
         // eslint-disable-next-line no-console
-        dispatch(updateUserName(data.get('userName') as string))
-        console.log({
-            email: data.get('userName'),
+
+        const userData = {
+            username: data.get('userName'),
             password: data.get('password'),
-        })
+        }
+
+        dispatch(loginUser(userData))
     }
 
     return (
@@ -131,14 +152,22 @@ const Login = function () {
                                 }
                                 label="Remember me"
                             />
-                            <Button
+                            <LoadingButton
+                                disabled={authenticationInProgress}
                                 type="submit"
                                 fullWidth
+                                loading={authenticationInProgress}
                                 variant="contained"
+                                loadingPosition="end"
                                 sx={{ mt: 3, mb: 2 }}
                             >
-                                Sign In {userName}
-                            </Button>
+                                Sign In
+                            </LoadingButton>
+                            {authenticationError && (
+                                <Alert severity="error">
+                                    {authenticationError.message}
+                                </Alert>
+                            )}
                             <Grid container>
                                 <Grid item xs>
                                     <Link href="#" variant="body2">
