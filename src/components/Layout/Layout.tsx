@@ -1,22 +1,35 @@
-import * as React from 'react'
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
-import MuiDrawer from '@mui/material/Drawer'
-import Box from '@mui/material/Box'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
-import Badge from '@mui/material/Badge'
-import Container from '@mui/material/Container'
-import {Dashboard as DashboardIcon} from "@mui/icons-material";
-import Link from '@mui/material/Link'
-import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import {ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
+import * as React from 'react';
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import MuiDrawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import {
+    Menu as MenuIcon,
+    Fastfood as FastfoodIcon,
+    People as PeopleIcon,
+    ChevronLeft as ChevronLeftIcon,
+    Notifications as NotificationsIcon,
+    FileCopy as FileCopyIcon,
+    ShoppingCart as ShoppingCartIcon,
+} from '@mui/icons-material';
+
+import { ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import {
+    customersRoute,
+    invoicesRoute,
+    platesRoute,
+} from '../../constants/routes';
 
 function Copyright(props: any) {
     return (
@@ -33,13 +46,13 @@ function Copyright(props: any) {
             {new Date().getFullYear()}
             {'.'}
         </Typography>
-    )
+    );
 }
 
-const drawerWidth: number = 240
+const drawerWidth: number = 240;
 
 interface AppBarProps extends MuiAppBarProps {
-    open?: boolean
+    open?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
@@ -58,7 +71,7 @@ const AppBar = styled(MuiAppBar, {
             duration: theme.transitions.duration.enteringScreen,
         }),
     }),
-}))
+}));
 
 const Drawer = styled(MuiDrawer, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -84,15 +97,19 @@ const Drawer = styled(MuiDrawer, {
             },
         }),
     },
-}))
+}));
 
-const mdTheme = createTheme()
+const mdTheme = createTheme();
 
-const DashboardContent: React.FC<any> = function ({ children }) {
-    const [open, setOpen] = React.useState(true)
+export default function DashboardContent(props: any) {
+    const [open, setOpen] = React.useState(true);
+    const navigate = useNavigate();
     const toggleDrawer = () => {
-        setOpen(!open)
-    }
+        setOpen(!open);
+    };
+    const goTo = (url: string) => {
+        navigate(url);
+    };
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -146,14 +163,37 @@ const DashboardContent: React.FC<any> = function ({ children }) {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
-                        <ListItemButton>
+                    <List>
+                        <ListItem onClick={() => goTo(platesRoute)} button>
                             <ListItemIcon>
-                                <DashboardIcon />
+                                <FastfoodIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItemButton>
+                            <ListItemText primary="Plates" />
+                        </ListItem>
+                        <ListItem onClick={() => goTo(customersRoute)} button>
+                            <ListItemIcon>
+                                <PeopleIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Customers" />
+                        </ListItem>
+                        <ListItem onClick={() => goTo(invoicesRoute)} button>
+                            <ListItemIcon>
+                                <FileCopyIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Invoices" />
+                        </ListItem>
+
+                        <ListItem
+                            onClick={() => goTo(`${invoicesRoute}/new`)}
+                            button
+                        >
+                            <ListItemIcon>
+                                <ShoppingCartIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="new Invoice" />
+                        </ListItem>
                     </List>
+                    <Divider />
                 </Drawer>
                 <Box
                     component="main"
@@ -169,12 +209,13 @@ const DashboardContent: React.FC<any> = function ({ children }) {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        {children}
+                        <Grid container spacing={3}>
+                            {props.children}
+                        </Grid>
+                        <Copyright sx={{ pt: 4 }} />
                     </Container>
                 </Box>
             </Box>
         </ThemeProvider>
-    )
+    );
 }
-
-export default DashboardContent

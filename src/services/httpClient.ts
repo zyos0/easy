@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { axiosConfig } from '../constants/config'
 import {getToken} from "../utils/tokenManagement";
+import {loginUrl} from "../constants/servicesUrls";
 
 const http = axios.create(axiosConfig)
 
@@ -21,7 +22,7 @@ http.interceptors.request.use(configRequestSuccess, configRequestError)
 const validateError = (error: any) => {
     const token = getToken()
     if (token) return Promise.reject(error)
-    window.location.href = 'loginUrl'
+    window.location.href = loginUrl
 }
 
 const enforceSecurity = (request: Promise<any>, strict: boolean) => {
