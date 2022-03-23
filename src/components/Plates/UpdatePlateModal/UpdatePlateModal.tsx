@@ -82,6 +82,7 @@ const UpdatePlateModal: React.FC<UpdatePlateModalProps> = ({
                 type="text"
                 fullWidth
                 margin="dense"
+                label='Plate Name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
             />
@@ -89,6 +90,7 @@ const UpdatePlateModal: React.FC<UpdatePlateModalProps> = ({
                 type="text"
                 fullWidth
                 margin="dense"
+                label="Price"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
             />

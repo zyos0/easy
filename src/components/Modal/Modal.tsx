@@ -38,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({
             <DialogTitle> {title}</DialogTitle>
             <DialogContent>{children}</DialogContent>
             <DialogActions>
-                <Button color="error" variant="outlined" onClick={onConfirm}>
+                <Button color="error" variant="outlined" onClick={onClose}>
                     {cancelLabel}
                 </Button>
 

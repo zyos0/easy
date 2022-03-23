@@ -25,6 +25,8 @@ import { Delete, Edit, Fastfood } from '@mui/icons-material'
 import UpdatePlateModal from '../../components/Plates/UpdatePlateModal/UpdatePlateModal'
 import DeletePlateModal from '../../components/Plates/DeletePlateModal/DeletePlateModal'
 import { Plate } from '../../types/Plate'
+import PlateListItem from '../../components/Plates/PlateListItem'
+import CustomList from '../../components/CustomList'
 
 const Plates = () => {
     const dispatch = useDispatch()
@@ -96,36 +98,14 @@ const Plates = () => {
                         {plateList && plateList.length ? (
                             <Grid item xs={9}>
                                 {plateList &&
+                                    plateList.length !== 0 &&
                                     plateList.map((item: any) => (
-                                        <List>
-                                            <ListItem key={item.id}>
-                                                <Avatar>
-                                                    <Fastfood />
-                                                </Avatar>
-                                                <ListItemText
-                                                    primary={item.nombre}
-                                                    secondary={`Price: ${item.precio}`}
-                                                />
-
-                                                <ListItemSecondaryAction>
-                                                    <IconButton
-                                                        onClick={() =>
-                                                            handleOnUpdate(item)
-                                                        }
-                                                    >
-                                                        <Edit />
-                                                    </IconButton>
-
-                                                    <IconButton
-                                                        onClick={() =>
-                                                            handleOnDelete(item)
-                                                        }
-                                                    >
-                                                        <Delete />
-                                                    </IconButton>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </List>
+                                        <CustomList<Plate>
+                                            renderAs={PlateListItem}
+                                            collection={plateList}
+                                            onDelete={handleOnDelete}
+                                            onUpdate={handleOnUpdate}
+                                        />
                                     ))}
                             </Grid>
                         ) : (
