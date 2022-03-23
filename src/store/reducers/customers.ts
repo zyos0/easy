@@ -1,20 +1,20 @@
-import { createReducer } from '@reduxjs/toolkit';
-import { CustomersActions } from '../actions/customers';
-import { Customer } from '../../types/Customer';
+import { createReducer } from '@reduxjs/toolkit'
+import { CustomersActions } from '../actions/customers'
+import { Customer } from '../../types/Customer'
 
 export interface CustomersState {
-    getCustomersListInProgress: boolean;
-    customersList: Customer[] | null;
-    getCustomersListError: { message: string } | null;
+    getCustomersListInProgress: boolean
+    customersList: Customer[] | null
+    getCustomersListError: { message: string } | null
 
-    createCustomerInProgress: boolean;
-    createCustomerError: { message: string } | null;
+    createCustomerInProgress: boolean
+    createCustomerError: { message: string } | null
 
-    updateCustomerInProgress: boolean;
-    updateCustomerError: { message: string } | null;
+    updateCustomerInProgress: boolean
+    updateCustomerError: { message: string } | null
 
-    deleteCustomerInProgress: boolean;
-    deleteCustomerError: { message: string } | null;
+    deleteCustomerInProgress: boolean
+    deleteCustomerError: { message: string } | null
 }
 
 const getInitialState = () => {
@@ -22,28 +22,22 @@ const getInitialState = () => {
         getCustomersListError: null,
         getCustomersListInProgress: false,
         customersList: null,
-    };
-};
+    }
+}
 
 const onGetCustomerListSuccess = (
     state: CustomersState,
     { payload }: ReturnType<typeof CustomersActions.onGetCustomerListSuccess>
 ) => {
-    return {
-        ...state,
-        customersList: payload,
-    };
-};
+    state.customersList = payload
+}
 
 const onGetCustomerListError = (
     state: CustomersState,
     { payload }: ReturnType<typeof CustomersActions.onGetCustomerListError>
 ) => {
-    return {
-        ...state,
-        getCustomersListError: { message: payload.message },
-    };
-};
+    state.getCustomersListError = { message: payload.message }
+}
 
 const toggleGetCustomerListLoadingState = (
     state: CustomersState,
@@ -51,31 +45,24 @@ const toggleGetCustomerListLoadingState = (
         payload,
     }: ReturnType<typeof CustomersActions.toggleGetCustomerListLoadingState>
 ) => {
-    return {
-        ...state,
-        getCustomersListInProgress: payload,
-    };
-};
+    state.getCustomersListInProgress = payload
+}
 
 const onCreateCustomerSuccess = (
     state: CustomersState,
     { payload }: ReturnType<typeof CustomersActions.onCreateCustomerSuccess>
 ) => {
-    return {
-        ...state,
-        customersList: state.customersList?.concat(payload),
-    };
-};
+    state.customersList = state.customersList
+        ? [...state.customersList, payload]
+        : [payload]
+}
 
 const onCreateCustomerError = (
     state: CustomersState,
     { payload }: ReturnType<typeof CustomersActions.onCreateCustomerError>
 ) => {
-    return {
-        ...state,
-        createCustomerError: { message: payload.message },
-    };
-};
+    state.createCustomerError = { message: payload.message }
+}
 
 const toggleCreateCustomerLoadingState = (
     state: CustomersState,
@@ -83,23 +70,18 @@ const toggleCreateCustomerLoadingState = (
         payload,
     }: ReturnType<typeof CustomersActions.toggleCreateCustomerLoadingState>
 ) => {
-    return {
-        ...state,
-        createCustomerInProgress: payload,
-    };
-};
+    state.createCustomerInProgress = payload
+}
 
 const onUpdateCustomerSuccess = (
     state: CustomersState,
     { payload }: ReturnType<typeof CustomersActions.onUpdateCustomerSuccess>
 ) => {
-    return {
-        ...state,
-        customersList: state.customersList?.map(function replaceCustomer(customerItem) {
-            return customerItem.id !== payload.id ? customerItem : payload;
-        }),
-    };
-};
+    state.customersList =
+        state.customersList?.map(function replaceCustomer(customerItem) {
+            return customerItem.id !== payload.id ? customerItem : payload
+        }) || null
+}
 
 const onUpdateCustomerError = (
     state: CustomersState,
@@ -108,8 +90,8 @@ const onUpdateCustomerError = (
     return {
         ...state,
         updateCustomerError: { message: payload.message },
-    };
-};
+    }
+}
 
 const toggleUpdateCustomerLoadingState = (
     state: CustomersState,
@@ -120,8 +102,8 @@ const toggleUpdateCustomerLoadingState = (
     return {
         ...state,
         updateCustomerInProgress: payload,
-    };
-};
+    }
+}
 
 const onDeleteCustomerSuccess = (
     state: CustomersState,
@@ -132,10 +114,10 @@ const onDeleteCustomerSuccess = (
         customersList: state.customersList?.filter(function removeCustomer(
             customerItem
         ) {
-            return customerItem.id !== payload;
+            return customerItem.id !== payload
         }),
-    };
-};
+    }
+}
 
 const onDeleteCustomerError = (
     state: CustomersState,
@@ -144,8 +126,8 @@ const onDeleteCustomerError = (
     return {
         ...state,
         deleteCustomerError: { message: payload.message },
-    };
-};
+    }
+}
 
 const toggleDeleteCustomerLoadingState = (
     state: CustomersState,
@@ -156,56 +138,68 @@ const toggleDeleteCustomerLoadingState = (
     return {
         ...state,
         deleteCustomerInProgress: payload,
-    };
-};
+    }
+}
 
-const resetCustomerState = () => getInitialState();
+const resetCustomerState = () => getInitialState()
 
 const customersReducerBuilder = (builder: any) => {
     builder.addCase(
         CustomersActions.onCreateCustomerSuccess,
         onCreateCustomerSuccess
-    );
-    builder.addCase(CustomersActions.onCreateCustomerError, onCreateCustomerError);
+    )
+    builder.addCase(
+        CustomersActions.onCreateCustomerError,
+        onCreateCustomerError
+    )
     builder.addCase(
         CustomersActions.toggleCreateCustomerLoadingState,
         toggleCreateCustomerLoadingState
-    );
+    )
 
     builder.addCase(
         CustomersActions.onUpdateCustomerSuccess,
         onUpdateCustomerSuccess
-    );
-    builder.addCase(CustomersActions.onUpdateCustomerError, onUpdateCustomerError);
+    )
+    builder.addCase(
+        CustomersActions.onUpdateCustomerError,
+        onUpdateCustomerError
+    )
     builder.addCase(
         CustomersActions.toggleUpdateCustomerLoadingState,
         toggleUpdateCustomerLoadingState
-    );
+    )
 
     builder.addCase(
         CustomersActions.onDeleteCustomerSuccess,
         onDeleteCustomerSuccess
-    );
-    builder.addCase(CustomersActions.onDeleteCustomerError, onDeleteCustomerError);
+    )
+    builder.addCase(
+        CustomersActions.onDeleteCustomerError,
+        onDeleteCustomerError
+    )
     builder.addCase(
         CustomersActions.toggleDeleteCustomerLoadingState,
         toggleDeleteCustomerLoadingState
-    );
+    )
 
     builder.addCase(
         CustomersActions.onGetCustomerListSuccess,
         onGetCustomerListSuccess
-    );
-    builder.addCase(CustomersActions.onGetCustomerListError, onGetCustomerListError);
+    )
+    builder.addCase(
+        CustomersActions.onGetCustomerListError,
+        onGetCustomerListError
+    )
     builder.addCase(
         CustomersActions.toggleGetCustomerListLoadingState,
         toggleGetCustomerListLoadingState
-    );
+    )
 
-    builder.addCase(CustomersActions.resetCustomerState, resetCustomerState);
-};
+    builder.addCase(CustomersActions.resetCustomerState, resetCustomerState)
+}
 
 export const customersReducer = createReducer(
     getInitialState(),
     customersReducerBuilder
-);
+)

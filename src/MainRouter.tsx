@@ -3,7 +3,7 @@ import Login from './pages/Login'
 import Plates from './pages/Plates'
 import {
     baseRoute,
-    customersRoute,
+    customersRoute, invoicesRoute,
     loginRoute,
     platesRoute,
 } from './constants/routes'
@@ -12,6 +12,9 @@ import { useDispatch } from 'react-redux'
 import { SessionActions } from './store/actions/session'
 import PrivateRoute from './components/PrivateRoute'
 import Customers from './pages/Customers'
+import InvoiceDetails from "./pages/InvoiceDetail/InvoiceDetails";
+import Invoices from "./pages/Invoices/Invoice";
+import InvoiceCreate from "./pages/InvoiceCreate/InvoiceCreate";
 
 const MainRouter = () => {
     const token = getToken()
@@ -38,6 +41,33 @@ const MainRouter = () => {
                     element={
                         <PrivateRoute>
                             <Customers />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path={`${invoicesRoute}/new`}
+                    element={
+                        <PrivateRoute>
+                            <InvoiceCreate />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path={invoicesRoute}
+                    element={
+                        <PrivateRoute>
+                            <Invoices />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path={`${invoicesRoute}/:id`}
+                    element={
+                        <PrivateRoute>
+                            <InvoiceDetails />
                         </PrivateRoute>
                     }
                 />
