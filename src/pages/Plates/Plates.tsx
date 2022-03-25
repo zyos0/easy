@@ -97,16 +97,14 @@ const Plates = () => {
 
                         {plateList && plateList.length ? (
                             <Grid item xs={9}>
-                                {plateList &&
-                                    plateList.length !== 0 &&
-                                    plateList.map((item: any) => (
-                                        <CustomList<Plate>
-                                            renderAs={PlateListItem}
-                                            collection={plateList}
-                                            onDelete={handleOnDelete}
-                                            onUpdate={handleOnUpdate}
-                                        />
-                                    ))}
+                                {plateList && plateList.length !== 0 && (
+                                    <CustomList<Plate>
+                                        renderAs={PlateListItem}
+                                        collection={plateList}
+                                        onDelete={handleOnDelete}
+                                        onUpdate={handleOnUpdate}
+                                    />
+                                )}
                             </Grid>
                         ) : (
                             <EmptyState message="No plates Available" />
