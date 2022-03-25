@@ -1,61 +1,74 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { customerListSelector } from '../../store/selectors/customers';
-import { plateListSelector } from '../../store/selectors/plates';
+import { useEffect, useReducer, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+    customerListSelector,
+    customersMapSelector,
+} from '../../store/selectors/customers'
+import {
+    plateListSelector,
+    platesMapSelector,
+} from '../../store/selectors/plates'
+import Layout from '../../components/Layout/Layout'
+import { CustomersActions } from '../../store/actions/customers'
+import { PlatesActions } from '../../store/actions/plates'
 
-import { invoicesUrl } from '../../constants/servicesUrls';
-
-import Layout from '../../components/Layout/Layout';
-import { CustomersActions } from '../../store/actions/customers';
-import { PlatesActions } from '../../store/actions/plates';
-import httpClient from '../../services/httpClient';
-import {Button, Grid, IconButton, MenuItem, Paper, Select, TextField} from '@mui/material';
+import {
+    Button,
+    Grid,
+    IconButton,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+} from '@mui/material'
 import {
     RemoveCircle as RemoveCircleIcon,
     AddCircle as AddCircleOutlineIcon,
-} from '@mui/icons-material';
+} from '@mui/icons-material'
+import { useInvoiceCreate } from '../../hooks/invoiceCreate'
+import { Customer } from '../../types/Customer'
+import { Plate } from '../../types/Plate'
+import {
+    getInitialState,
+    InvoiceCreateActions,
+    invoiceCreateReducer,
+} from './InvoiceCreateReducer'
 function InvoiceCreate() {
-    const [customer, setCustomer] = useState('');
-    const [plate, setPlate] = useState('');
-    const [description, setDescription] = useState('');
-    const [observation, setObservation] = useState('');
-    const [orders, setOrders] = useState<any[]>([]);
+    const [state, localDispatch] = useReducer(
+        invoiceCreateReducer,
+        getInitialState()
+    )
+    const { observation, description, orders: orderMap } = state
+    const orders = Object.values(orderMap) as any
+    const [customer, setCustomer] = useState<Customer>()
+    const [plate, setPlate] = useState<Plate>()
 
-    const customerList = useSelector(customerListSelector);
-    const plateList = useSelector(plateListSelector);
+    const { updateInProgress, updateResult, updateError, createNewInvoice } =
+        useInvoiceCreate()
 
-    const dispatch = useDispatch();
+    const customerList = useSelector(customerListSelector)
+    const plateList = useSelector(plateListSelector)
+    const platesMap = useSelector(platesMapSelector)
+    const customersMap = useSelector(customersMapSelector)
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        if (!customerList) dispatch(CustomersActions.getCustomers());
-        if (!plateList) dispatch(PlatesActions.getPlates());
-    }, []);
+        if (!customerList) dispatch(CustomersActions.getCustomers())
+        if (!plateList) dispatch(PlatesActions.getPlates())
+    }, [])
 
-    const onAddOrder = () => {
-        function findPlateName() {
-            const objPlato = plateList?.find((p) => p.id === plate);
-            return objPlato?.nombre;
+    useEffect(() => {
+        if (updateError) {
+            console.log(updateError)
         }
+    }, [updateError])
 
-        const existInPlate = orders.find((x) => x.id === plate);
-        const newOrderArray = [...orders];
-
-        if (existInPlate) {
-            const newQuantity = (existInPlate.quantity += 1);
-            const index = newOrderArray.findIndex((p) => p.id === plate);
-
-            newOrderArray[index]['quantity'] = newQuantity;
-        } else {
-            const order = {
-                id: plate,
-                nombre: findPlateName(),
-                quantity: 1,
-            };
-            newOrderArray.push(order);
+    useEffect(() => {
+        if (updateResult) {
+            localDispatch({ type: InvoiceCreateActions.resetState })
         }
-
-        setOrders(newOrderArray);
-    };
+    }, [updateResult])
 
     const onNewInvoice = async () => {
         function transformOrders() {
@@ -66,65 +79,46 @@ function InvoiceCreate() {
                     plato: {
                         id: p.id,
                     },
-                };
-            });
+                }
+            })
         }
-        try {
-            const payload = {
-                descripcion: description,
-                observacion: observation,
-                cliente: {
-                    id: customer,
-                },
-                items: transformOrders(),
-            };
-            await httpClient.post(invoicesUrl, payload);
-            setCustomer('');
-            setPlate('');
-            setDescription('');
-            setObservation('');
-            setOrders([]);
-        } catch (error) {
-            console.log(error);
+
+        const payload = {
+            descripcion: description,
+            observacion: observation,
+            cliente: {
+                id: customer,
+            },
+            items: transformOrders(),
         }
-    };
+        createNewInvoice(payload)
+    }
 
     const handleSelectCustomer = (event: any) => {
-        setCustomer(event.target.value);
-        setPlate('');
-        setOrders([]);
-    };
+        const customerKey = event.target.value
+        setCustomer(customersMap[customerKey] as Customer)
+        setPlate(undefined)
+        localDispatch({ type: InvoiceCreateActions.removeOrders })
+    }
 
     const handleSelectPlate = (event: any) => {
-        setPlate(event.target.value);
-    };
+        const platesKey = event.target.value
+        setPlate(platesMap[platesKey] as Plate)
+    }
 
     const onChangeDescription = (event: any) => {
-        setDescription(event.target.value);
-    };
+        localDispatch({
+            type: InvoiceCreateActions.updateDescription,
+            payload: event.target.value,
+        })
+    }
 
     const onChangeObservation = (event: any) => {
-        setObservation(event.target.value);
-    };
-
-    const onSubtract = (order: any) => {
-        const newOrderArray = [...orders];
-        const orderDuplicate = { ...order };
-
-        const newQuantity = (orderDuplicate.quantity -= 1);
-
-        const index = newOrderArray.findIndex(
-            (p) => p.id === orderDuplicate.id
-        );
-
-        if (newQuantity === 0) {
-            newOrderArray.splice(index, 1);
-        } else {
-            newOrderArray[index]['quantity'] = newQuantity;
-        }
-
-        setOrders(newOrderArray);
-    };
+        localDispatch({
+            type: InvoiceCreateActions.updateObservation,
+            payload: event.target.value,
+        })
+    }
 
     const renderOrders = () => {
         return (
@@ -146,7 +140,12 @@ function InvoiceCreate() {
                             <div className="tableOrders__body--col">
                                 <IconButton
                                     color="inherit"
-                                    onClick={() => onSubtract(order)}
+                                    onClick={() =>
+                                        localDispatch({
+                                            type: InvoiceCreateActions.removeEntry,
+                                            payload: plate,
+                                        })
+                                    }
                                 >
                                     <RemoveCircleIcon />
                                 </IconButton>
@@ -155,8 +154,8 @@ function InvoiceCreate() {
                     ))}
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     return (
         <Layout>
@@ -203,7 +202,10 @@ function InvoiceCreate() {
                     >
                         {customerList &&
                             customerList.map((customer) => (
-                                <MenuItem value={customer.id} key={customer.id}>
+                                <MenuItem
+                                    value={customer as any}
+                                    key={customer.id}
+                                >
                                     {customer.nombres} {customer.apellidos}
                                 </MenuItem>
                             ))}
@@ -225,7 +227,15 @@ function InvoiceCreate() {
                     </Select>
                 </Grid>
                 <Grid item xs={4}>
-                    <IconButton color="inherit" onClick={onAddOrder}>
+                    <IconButton
+                        color="inherit"
+                        onClick={() =>
+                            localDispatch({
+                                type: InvoiceCreateActions.addEntry,
+                                payload: plate,
+                            })
+                        }
+                    >
                         <AddCircleOutlineIcon />
                     </IconButton>
                 </Grid>
@@ -263,7 +273,7 @@ function InvoiceCreate() {
                 </Grid>
             </Grid>
         </Layout>
-    );
+    )
 }
 
-export default InvoiceCreate;
+export default InvoiceCreate

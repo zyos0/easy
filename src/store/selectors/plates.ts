@@ -1,5 +1,9 @@
 import { PlatesState } from '../reducers/plates';
 import { createSelector } from '@reduxjs/toolkit';
+import {MapToList} from "../../utils/transformations";
+import {Customer} from "../../types/Customer";
+import {customerListSelector} from "./customers";
+import {Plate} from "../../types/Plate";
 
 export const platesStateSelector = (state: any): PlatesState => state.plates;
 
@@ -9,6 +13,11 @@ export const plateListSelector = createSelector(
         return plateState.platesList;
     }
 );
+
+export const platesMapSelector = createSelector(
+    plateListSelector,
+    (plateList) => MapToList<Plate>(plateList)
+)
 
 export const getPlatesListInProgressSelector = createSelector(
     platesStateSelector,
